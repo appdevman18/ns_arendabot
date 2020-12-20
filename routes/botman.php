@@ -1,21 +1,10 @@
 <?php
 
 use App\Http\Controllers\BotManController;
-use App\Http\Controllers\Menu\Main;
-use BotMan\BotMan\BotMan;
-use BotMan\BotMan\Messages\Attachments\Location;
-use BotMan\BotMan\Messages\Incoming\Answer;
-use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\Drivers\Telegram\Extensions\Keyboard;
 use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
-
-use Location\Coordinate;
-use Location\Distance\Haversine;
-use Location\Distance\Vincenty;
-use Location\Line;
-
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 $botman = resolve('botman');
 
@@ -43,3 +32,14 @@ $botman->hears('🎟 Заявка', BotManController::class.'@orderConversation'
 $botman->hears('🎁 Акции', BotManController::class.'@saleConversation');
 
 $botman->fallback('App\Http\Controllers\FallbackController');
+
+$botman->hears(
+    'php artisan cache:clear',
+    function ($bot) {
+        $bot->reply('Кеш очищен');
+
+        Log::debug('CLEARED');
+        Artisan::call('cache:clear');
+    }
+);
+
